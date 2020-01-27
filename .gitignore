@@ -1,0 +1,6 @@
+#ignore all ini files
+*.ini
+utils.py
+
+#ignore this file
+junkCodeStorage.py
