@@ -1,7 +1,5 @@
 #ignore all ini files
 *.ini
-utils.py
 **/config
 
-#ignore this file
-junkCodeStorage.py
+utils.py
