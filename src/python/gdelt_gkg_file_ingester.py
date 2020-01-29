@@ -20,10 +20,41 @@ import logging
 import utils as f
 import configparser
 
-class gdelt_gkg_file_ingester:
+class Gdelt_gkg_file_ingester:
+    """
+    Handles GDELT graph data file
+    """
     
+    
+    # class variable
     #dbParams =  {}
     
+    
+    def __init__(self):
+    #
+        
+        """
+        Setting up Spark session and Spark context, AWS access key
+        """
+        config = configparser.ConfigParser()
+        config.read('../../config/gdelt.ini')
+                
+        self.dbParams =  {"url" : config['PostgreSQL']['url']
+                     ,"dbtable_stag" : config['PostgreSQL']['dbtable_stag']
+                     ,"user" : config['PostgreSQL']['user']
+                     ,"password" : config['PostgreSQL']['password']
+                     ,"stringtype" : config['PostgreSQL']['stringtype']
+                     ,"driver" : config['PostgreSQL']['driver']
+                     }
+        
+        spark = SparkSession.builder \
+            .appName("bubble-breaker") \
+            .getOrCreate()
+    
+        self.sc=spark.sparkContext
+        logging.basicConfig(filename="gdelt.log", format='%(asctime)s %(levelname)s: %(message)s ', level=logging.INFO)
+        logging.info("STARTING Gdelt_gkg_file_ingester")
+        
     def ingest_persons(self):
         """
         Extracts persons from csv file to store in persons table
@@ -51,64 +82,43 @@ class gdelt_gkg_file_ingester:
         gkgRowRDD = gkgRDD.map(lambda x : Row(name = x[11].split(';')[:-1],
                                               theme = x[7].split(';')[:-1]))
         
+        logging.info(gkgRowRDD.take(1))
+        
         sqlContext = SQLContext(self.sc)
         #Transform RDDs to dataframes
         gkgDF     = sqlContext.createDataFrame(gkgRowRDD)
-        explodedDF = gkgDF.select(explode(gkgDF.name).alias("name")).distinct()
         
-        logging.info("Starting to insert into persons table.")
+        #save to parquet file for future use
+        gkgDF.write.parquet("gdelt.parquet")
+        
+        explDF_name = gkgDF.select(explode(gkgDF.name).alias("name"),gkgDF.theme)
+        logging.info("print(explDF_name.take(10))")
+        logging.info(explDF_name.take(10))
+        logging.info("printing explDF_name: ")
+        logging.info(explDF_name.select().show())
+        explDF_theme = explDF_name.select(explDF_name.name, 
+                                          explode(explDF_name.theme)
+                                          .alias("theme")).distinct()
+        
+        logging.info(explDF_theme.printSchema())
+        logging.info(explDF_theme.select().show())
     
+        logging.info("Starting to insert into persons table.")
         #Insert in the persons table
         #MUST move the credentials to a config file and not submit to git
-        explodedDF.write.format("jdbc") \
+        explDF_theme.write.format("jdbc") \
         .option("url", self.dbParams["url"]) \
-        .option("dbtable", self.dbParams["dbtable"]) \
+        .option("dbtable", self.dbParams["dbtable_stag"]) \
         .option("user", self.dbParams["user"]) \
         .option("password", self.dbParams["password"]) \
         .option("stringtype", self.dbParams["stringtype"]) \
         .option("driver", self.dbParams["driver"]) \
         .mode('append').save()
-        
-        def main():
-            """
-            Read GDELT data from S3, split and process words in themes,
-            and perform word count. Taxonomy words are defined as word
-            count >= occurrence_cut. List of taxonomy words written to
-            out_file_name
-            """
-            
-            logging.basicConfig(filename="gdelt.log", format='%(asctime)s %(levelname)s: %(message)s ', level=logging.INFO)
-            logging.info("started main()")
-
-    
-    def __init__(self):
-    #
-        
-        """
-        Setting up Spark session and Spark context, AWS access key
-        """
-        config = configparser.ConfigParser()
-        config.read('../../config/gdelt.ini')
                 
-        self.dbParams =  {"url" : config['PostgreSQL']['url']
-                     ,"dbtable" : config['PostgreSQL']['dbtable']
-                     ,"user" : config['PostgreSQL']['user']
-                     ,"password" : config['PostgreSQL']['password']
-                     ,"stringtype" : config['PostgreSQL']['stringtype']
-                     ,"driver" : config['PostgreSQL']['driver']
-                     }
-        
-        spark = SparkSession.builder \
-            .appName("bubble-breaker") \
-            .getOrCreate()
-    
-        self.sc=spark.sparkContext
-        logging.basicConfig(filename="gdelt.log", format='%(asctime)s %(levelname)s: %(message)s ', level=logging.INFO)
-        logging.info("started main()")
+        logging.info("Finished inserting into persons table.")
 
 ########################################################3        
-
     
-ggfi = gdelt_gkg_file_ingester()
+ggfi = Gdelt_gkg_file_ingester()
 #ggfi.main()
 ggfi.ingest_persons()
