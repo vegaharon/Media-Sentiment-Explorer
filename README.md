@@ -23,7 +23,8 @@ GDELT is a very rich and informtive dataset with a huge potential that is descri
  
  Pipeline
 -----------------
-
+ ![pipe](https://github.com/vegaharon/Media-Sentiment-Explorer/blob/dev/docs/Pipeline.JPG)
+ 
 ![pipiline](https://github.com/vegaharon/Media-Sentiment-Explorer/tree/dev/docs/Pipeline.JPG "Media Sentiment Explorer Pipeline")
 
 ![alt text](https://github.com/AndreyBozhko/TaxiOptimizer/blob/master/docs/pipeline.jpg "TaxiOptimizer Pipeline")
