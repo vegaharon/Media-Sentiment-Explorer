@@ -19,6 +19,8 @@ GDELT is a very rich and informtive dataset with a huge potential that is descri
  
  ***
  
+ ![elections](https://github.com/vegaharon/Media-Sentiment-Explorer/blob/dev/docs/EelctionsSnapshot.JPG)
+ 
  Pipeline
 -----------------
 
