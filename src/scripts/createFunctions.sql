@@ -1,4 +1,4 @@
-#Functions
+--Functions
 CREATE OR REPLACE FUNCTION populate_gdelt() RETURNS void AS $$
 BEGIN
 
