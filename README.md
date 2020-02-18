@@ -79,3 +79,4 @@ Configuration settings are stored in `config/` folder and not uploaded to git fo
 
 ##### Sample input file
  ![a gkg zip file](https://github.com/vegaharon/Media-Sentiment-Explorer/blob/dev/docs/20200201174500.gkg.csv.zip)
+
