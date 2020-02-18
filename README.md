@@ -31,6 +31,7 @@ GDELT is a very rich and informtive dataset with a huge potential that is descri
  
 
 > * The dashboard shows the comparison betweeen candidates for all the availble sentiment parameters. *
+
  ![elections](https://github.com/vegaharon/Media-Sentiment-Explorer/blob/dev/docs/EelctionsSnapshot.JPG)
  
  ***
@@ -51,7 +52,7 @@ This script downloads
  ![pipiline](https://github.com/vegaharon/Media-Sentiment-Explorer/blob/dev/docs/Pipeline.JPG)
 
 ***
-### Setup
+# Setup
 
 Clone this repository using
 'git clone https://github.com/vegaharon/Media-Sentiment-Explorer'.
@@ -68,7 +69,6 @@ To reproduce my environment, 11 m4.large AWS EC2 instances are needed:
 
 The Apache Airflow can be installed on the master node of *spark-batch-cluster*. Follow the instructions in `docs/Airflow_instructions.txt` to launch the Airflow server.
 
-
 ##### PostgreSQL setup
 The PostgreSQL database sits on the db node.
 Follow the instructions in `docs/postgres_instructions.txt` to download and setup access to it.
@@ -76,3 +76,6 @@ Follow the instructions in `docs/postgres_instructions.txt` to download and setu
 ##### Configurations
 Configuration settings are stored in `config/` folder and not uploaded to git for sequrity reasons.
 >  The parmeters are expected in `config/gdelt.ini` with table names and password to the postgres DB.
+
+##### Sample input file
+![a gkg zip file](https://github.com/vegaharon/Media-Sentiment-Explorer/blob/dev/docs/20200201174500.gkg.csv.zip)
