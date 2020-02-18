@@ -4,9 +4,9 @@
 #Then it executes python spark job that ingests that file from S3 converts it to dataframe
 #selects some of the columns, renames them and archives them in S3 in parquet format
 #It also transforms it and saves in postgres DB
-#Then an SQL function is executed in postgres that does to further ths data processing to prepare it for 
-#further usage by a DS model or a front end dashboard. 
-#intermediae files get delited as they become unnesessary
+#Then an SQL function is executed in postgres that does further data processing to prepare it for 
+#usage by a DS model or a front end dashboard. 
+#Intermediae files get delited as they become unnesessary.
 
 startDate="2020-01-31"
 endDate="2020-02-02"
