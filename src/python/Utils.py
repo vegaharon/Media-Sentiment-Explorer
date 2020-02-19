@@ -2,11 +2,23 @@
 """
 Created on Sun Feb  2 00:33:02 2020
 
-@author: vegah
+@author: Vegan Aharonian
 """
 
 import configparser
 import logging
+
+def parse_input_file_into_rdd(sc): 
+    inputFile = 's3a://gdeltstorage/currentGdeltFile.csv'
+    gkgRDD = sc.textFile(inputFile) 
+    gkgRDD = gkgRDD.map(lambda x: x.encode('utf', 'ignore'))
+    gkgRDD.cache()
+    gkgRDD = gkgRDD.map(lambda x: x.split('\t'))
+
+    return gkgRDD
+
+def save_to_s3_parquet(gkgDF, destination):
+    gkgDF.write.mode('append').parquet(destination)
 
 def save_to_db(df, dbtable):
     
@@ -28,8 +40,8 @@ def save_to_db(df, dbtable):
                  ,'driver' : config['PostgreSQL']['driver']
                  }
 
-#    try:
-    df.write.format('jdbc') \
+    try:
+        df.write.format('jdbc') \
         .option('url', dbParams['url']) \
         .option('dbtable', dbParams[dbtable]) \
         .option('user', dbParams['user']) \
@@ -39,15 +51,7 @@ def save_to_db(df, dbtable):
         .option('batchsize', 10000) \
         .mode('append') \
         .save()
-#    except:
-#        logging.error('An error occured while inserting into table: ' + dbtable)
+    except:
+        logging.error('An error occured while inserting into table: ' + dbtable)
 
     logging.info('Finished inserting into table: ' + dbtable)
-"""    
-    def get_db_connection():
-        psycopg2.connect(user="postgres",
-                        password="pass@#29",
-                        host="127.0.0.1",
-                        port="5432",
-                        database="postgres_db")
-"""
